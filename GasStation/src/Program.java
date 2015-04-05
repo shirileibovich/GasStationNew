@@ -7,6 +7,8 @@ public class Program {
 		int ss;
 		int yy;
 		int 555;
+		
+		int helloWorld;
 
 	}
 
