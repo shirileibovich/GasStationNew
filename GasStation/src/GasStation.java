@@ -16,7 +16,9 @@ public class GasStation {
 	
 	
 	
-	public void addWaitingAirplaneCar(fuelPump){
+	public void addWaitingCar(FuelPump fuelPump){
 		
 	}
+	
+
 }

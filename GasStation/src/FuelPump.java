@@ -1,34 +1,33 @@
-import java.util.Calendar;
 
 
 public class FuelPump extends Thread {
 	private GasStation theGasStaion;
-	private int id;
+	private long id;
 	
 	
 	
 	
 	
-	public FuelPump(GasStation gasStaion, int id){
+	public FuelPump(GasStation gasStaion, long id){
 		this.id = id;
 		this.theGasStaion=gasStaion;
 	}
 	
 	
 	public void fuel() throws InterruptedException {
-		if (theGasStaion.canStartfuel){
+		if (theGasStaion.canStartfuel()){
 		synchronized (this) {
-			theGasStaion.addWaitingAirplaneCar(this);
+			theGasStaion.addWaitingCar(this);
 			wait();
 		}
 
-		synchronized (theAirport) {
-			System.out.println(start fuel);
+		synchronized (theGasStaion) {
+			System.out.println("start fuel");
 			
-			long fuelTime = Math.random() * 10000;
+			long fuelTime = (long) (Math.random() * 10000);
 			Thread.sleep(fuelTime );
 			fuelUsed(fuelTime/10);	
-			theAirport.notifyAll();
+			theGasStaion.notifyAll();
 		}
 	}
 		else
@@ -41,6 +40,17 @@ public class FuelPump extends Thread {
 		return numOfLiters;
 	}
 	
-	
+	@Override
+	public void run() {
+		try {
+			fuel();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public long getTheId() {
+		return this.id;
+	}
 	
 }
