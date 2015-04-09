@@ -1,34 +1,37 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.Semaphore;
 
 
-public class FuelPump extends Thread {
+public class FuelPump implements Runnable{
 	private GasStation theGasStaion;
 	private long id;
 	
-	
+	private Semaphore isInUsed;
+	private boolean finishedFueling = false;
 	
 	
 	
 	public FuelPump(GasStation gasStaion, long id){
 		this.id = id;
-		this.theGasStaion=gasStaion;
+		this.theGasStaion = gasStaion;
 	}
 	
 	
-	public void fuel() throws InterruptedException {
+	public void fuel(Car car) throws InterruptedException {
 		if (theGasStaion.canStartfuel()){
-		synchronized (this) {
-			theGasStaion.addWaitingCar(this);
-			wait();
-		}
-
-		synchronized (theGasStaion) {
+		
+			if (isInUsed.tryAcquire()){
 			System.out.println("start fuel");
-			
-			long fuelTime = (long) (Math.random() * 10000);
-			Thread.sleep(fuelTime );
-			fuelUsed(fuelTime/10);	
-			theGasStaion.notifyAll();
+			long fuelTime = car.getNumOfLiters();		
+			car.sleep(fuelTime*10);
+			fuelUsed(fuelTime);	
+			isInUsed.release();		
 		}
+		else{
+			
+		}
+			
 	}
 		else
 			System.out.println("not enough fuel");
@@ -51,6 +54,22 @@ public class FuelPump extends Thread {
 
 	public long getTheId() {
 		return this.id;
+	}
+	
+	
+	public synchronized void addWaitingCar(Car car) {
+		waitingAirplanes.add(car);
+
+		System.out.println("After adding car #" 
+				+ " there are " + waiting.size()
+				+ " airplanes waiting");
+
+		synchronized (/*dummyWaiter*/this) {
+			if (waitingAirplanes.size() == 1) {
+				/*dummyWaiter.*/notify(); // to let know there is an airplane
+										// waiting
+			}
+		}
 	}
 	
 }
