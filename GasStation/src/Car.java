@@ -1,4 +1,7 @@
 import java.util.Calendar;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class Car  extends Thread {
@@ -6,6 +9,8 @@ public class Car  extends Thread {
 	private boolean wantClean, wantFule;
 	private GasStation theGasStation;
 	private long numOfLiters;
+	private boolean finishedFueling, finisedCleaning;
+	
 	
 	
 	public Car (long id,  boolean wantClean,boolean wantFule,GasStation gasStation, long numOfLiters){
@@ -15,13 +20,22 @@ public class Car  extends Thread {
 		this.theGasStation =gasStation;
 		this.numOfLiters =numOfLiters;
 		
+		if (wantFule)
+			finishedFueling =false;
+		
+		if (wantClean)
+			finisedCleaning =false;
 	}	
 	
 @Override	
 public void run(){
+	synchronized(this){
+	System.out.println("car start" + this.getId());
 	if (wantFule && wantClean){
 		if (this.theGasStation.whatToDoFirst()){ //if true fuel else cleaning
+			System.out.println("start fule" + this.getId());
 			this.startFuel();
+			System.out.println("car finished fuel go to cleaning" + this.getId());
 			this.startClean();
 			
 	}
@@ -38,28 +52,20 @@ public void run(){
 		else{
 			this.startClean();
 		}
+	}
 			
 }
 	
 	public void startFuel(){
-		try {
-			if (theGasStation.hasFreePump()){
-				this.theGasStation.getPump().fuel(this);
-				System.out.println("car turn to pump to start fuel");
-			}
-			else
-				
 			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			System.out.println("car turn to pump to start fuel " + this.getId());
+			this.theGasStation.carWantToFule(this);
 		
 	}
 
 	public void startClean(){
 		this.theGasStation.goTocleaning();
-		System.out.println("start cleaning");
+		System.out.println("start cleaning " + this.getId());
 	}
 
 	public long getId() {
@@ -102,6 +108,23 @@ public void run(){
 		this.numOfLiters = numOfLiters;
 	}
 
+	public boolean isFinishedFueling() {
+		return finishedFueling;
+	}
+
+	public void setFinishedFueling(boolean finishedFueling) {
+		this.finishedFueling = finishedFueling;
+	}
+
+	public boolean isFinisedCleaning() {
+		return finisedCleaning;
+	}
+
+	public void setFinisedCleaning(boolean finisedCleaning) {
+		this.finisedCleaning = finisedCleaning;
+	}
+
+	
 	
 	
 }
