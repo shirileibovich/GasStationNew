@@ -30,24 +30,40 @@ public class Car  extends Thread {
 @Override	
 public void run(){
 	synchronized(this){
-	System.out.println("car start" + this.getId());
+	//System.out.println("car start" + this.getId());
 	if (wantFule && wantClean){
 		if (this.theGasStation.whatToDoFirst()){ //if true fuel else cleaning
-			System.out.println("start fule" + this.getId());
-			this.startFuel();
+			//System.out.println("start fule" + this.getId());
+				try {
+					this.fule();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
 			System.out.println("car finished fuel go to cleaning" + this.getId());
 			this.startClean();
 			
 	}
 		else{
 			this.startClean();
-			this.startFuel();
+			try {
+				this.fule();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}
 	else
 		if (wantFule){
-			this.startFuel();
+			try {
+				this.fule();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
 		}
 		else{
 			this.startClean();
@@ -56,13 +72,41 @@ public void run(){
 			
 }
 	
-	public void startFuel(){
+
+	public void fule() throws InterruptedException{
+		synchronized (this) {
+			theGasStation.addWaitingCarToFuel(this);
+			System.out.println("added car to waiting list to fuel " + this.getId());
+			wait();
+		}
+		synchronized (theGasStation) {
 			
-			System.out.println("car turn to pump to start fuel " + this.getId());
-			this.theGasStation.carWantToFule(this);
-		
+			try {
+				FuelPump freePump = theGasStation.getFreePump();
+				System.out.println("start fuel in fule pump " + this.getId() + " fuel pump num " + freePump.getTheId());
+				System.out.println("num of liter " +this.getNumOfLiters()+ " car num " +this.getId());
+				this.sleep(this.getNumOfLiters() * 10);
+				System.out.println("after sleep = finisined fueling" + this.getId());
+				
+				this.theGasStation.addFulePumpToQue(freePump);
+				this.theGasStation.changeFuelCapacity(this.getNumOfLiters());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
 	}
 
+
+	
+
+
+
+	
+	
+	
+	
 	public void startClean(){
 		this.theGasStation.goTocleaning();
 		System.out.println("start cleaning " + this.getId());

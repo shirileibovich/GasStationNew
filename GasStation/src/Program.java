@@ -5,8 +5,8 @@
 public class Program {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		GasStation thegas = new GasStation();
+		MainFuelPool mfp = new MainFuelPool(500, 220);
+		GasStation thegas = new GasStation(2, mfp, 7.82f);
 		Thread GasThread = new Thread(thegas);
 		
 		
@@ -26,8 +26,8 @@ public class Program {
 		allCars[4] =c5;
 
 		
-		FuelPump fp1 = new FuelPump(thegas, 001);
-		thegas.addFulePumpToQue(fp1);
+	
+		
 		GasThread.start();
 		
 		
