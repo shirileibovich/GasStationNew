@@ -6,7 +6,8 @@ public class Program {
 
 	public static void main(String[] args) {
 		MainFuelPool mfp = new MainFuelPool(500, 220);
-		GasStation thegas = new GasStation(2, mfp, 7.82f);
+		CleaningService cs = new CleaningService(3, 40, 15);
+		GasStation thegas = new GasStation(2, mfp, 7.82f, cs);
 		Thread GasThread = new Thread(thegas);
 		
 		
