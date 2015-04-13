@@ -8,6 +8,7 @@ public class Car extends Thread {
 	private boolean wantClean, wantFule;
 	private GasStation theGasStation;
 	private long numOfLiters;
+	private boolean isRunning;
 
 	public Car(long id, boolean wantClean, boolean wantFule,
 			GasStation gasStation, long numOfLiters) {
@@ -16,66 +17,70 @@ public class Car extends Thread {
 		this.wantFule = wantFule;
 		this.theGasStation = gasStation;
 		this.numOfLiters = numOfLiters;
+		this.isRunning = true;
 
 	}
 
 	@Override
 	public void run() {
-		synchronized (this) {
-			// System.out.println("car start" + this.getId());
-			if (wantFule && wantClean) {
-				if (this.theGasStation.whatToDoFirst()) { // if true fuel else
-															// cleaning
-					// System.out.println("start fule" + this.getId());
+		while (this.isRunning) {
+			synchronized (this) {
+				// System.out.println("car start" + this.getId());
+				if (wantFule && wantClean) {
+					if (this.theGasStation.whatToDoFirst()) { // if true fuel
+																// else
+																// cleaning
+						// System.out.println("start fule" + this.getId());
+						try {
+							this.fule();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						System.out.println("car finished fuel go to cleaning"
+								+ this.getId());
+						try {
+							this.clean();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					} else {
+						try {
+							this.clean();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							this.fule();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+				} else if (wantFule) {
 					try {
 						this.fule();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
-					System.out.println("car finished fuel go to cleaning"
-							+ this.getId());
-					try {
-						this.clean();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
+					;
 				} else {
 					try {
 						this.clean();
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					try {
-						this.fule();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-
-			} else if (wantFule) {
-				try {
-					this.fule();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				;
-			} else {
-				try {
-					this.clean();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				this.isRunning = false;
 			}
 		}
-
 	}
 
 	public void fule() throws InterruptedException {

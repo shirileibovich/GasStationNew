@@ -119,6 +119,24 @@ public class GasStation implements Runnable {
 		return cleaningProfits;
 	}
 
+	public void closeGasStaition(){
+		
+		if(!this.waitingCarsToFuel.isEmpty()){
+			this.waitingCarsToFuel.clear();
+		}
+		
+		while(!this.waitingCarsToFuel.isEmpty()){
+			System.out.println("waiting for car to finished fueling ");
+		}
+		while (!this.cs.getWaitingForInsideCleaningQue().isEmpty()){
+			System.out.println("waiting for inside cleanig to finish");
+		}
+		
+		this.cs.setRunning(false);
+		this.isOpen = false;
+		
+		
+	}
 	public void run() {
 		System.out.println("In GasS::run");
 		while (isOpen) {

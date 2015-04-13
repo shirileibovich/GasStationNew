@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class CleaningService implements Runnable{
+public class CleaningService implements Runnable {
 	private int numOfTeams;
 	private float price;
 	private int secondsPerAutoClean;
@@ -9,16 +9,16 @@ public class CleaningService implements Runnable{
 	private Queue<Car> WaitingForInsideCleaningQue = new LinkedList<Car>();
 	private Queue<InsideCleaningTeams> freeCleaningTeam = new LinkedList<InsideCleaningTeams>();
 	private InsideCleaningTeams[] insideTeamArr;
-	
+	private boolean isRunning;
 
-	public CleaningService(int numOfTeams, float price,
-			int secondsPerAutoClean) {
+	public CleaningService(int numOfTeams, float price, int secondsPerAutoClean) {
 		super();
 		this.numOfTeams = numOfTeams;
 		this.price = price;
 		this.secondsPerAutoClean = secondsPerAutoClean;
 		this.outsideCleaningInUse = false;
 		this.insideTeamArr = new InsideCleaningTeams[this.numOfTeams];
+		this.isRunning = true;
 
 		for (int i = 0; i < this.numOfTeams; i++) {
 			insideTeamArr[i] = new InsideCleaningTeams();
@@ -115,12 +115,22 @@ public class CleaningService implements Runnable{
 
 	}
 
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+
 	@Override
 	public void run() {
-		while (!freeCleaningTeam.isEmpty()){
-			notifyCarInsideClean();
+		while (this.isRunning) {
+			if (!freeCleaningTeam.isEmpty()) {
+				notifyCarInsideClean();
+			}
 		}
-		
+
 	}
 
 }
