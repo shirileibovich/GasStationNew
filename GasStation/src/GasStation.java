@@ -14,6 +14,9 @@ public class GasStation implements Runnable {
 	private CleaningService cs;
 	private float fuelingProfits = 0;
 	private float cleaningProfits = 0;
+	private int fuelCounter=0;
+	private int cleanCounter=0;
+	
 
 	public GasStation(int numOfPumps, MainFuelPool mainPool,
 			float pricePerLiter, CleaningService cs) {
@@ -111,6 +114,28 @@ public class GasStation implements Runnable {
 		this.cleaningProfits += profit;
 	}
 
+
+	public void refillMainFuelPool(){
+		float full=mainFuelPool.getMaxCapacity();
+		mainFuelPool.setCurrentCapacity(full);
+	}
+	
+	public void setFuelCounter(){
+		fuelCounter++;
+	}
+	
+	public void setCleanCounter(){
+		cleanCounter++;
+	}
+	
+	public int getFuelCounter(){
+		return fuelCounter;
+	}
+	
+	public int getCleanCounter(){
+		return cleanCounter;
+	}
+	
 	public float getFuelingProfits() {
 		return fuelingProfits;
 	}

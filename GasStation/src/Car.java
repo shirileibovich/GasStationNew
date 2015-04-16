@@ -99,6 +99,7 @@ public class Car extends Thread {
 				System.out.println("num of liter " + this.getNumOfLiters()
 						+ " car num " + this.getId());
 				this.sleep(this.getNumOfLiters() * 10);
+				theGasStation.setFuelCounter();
 				System.out.println("after sleep = finisined fueling"
 						+ this.getId());
 
@@ -126,6 +127,7 @@ public class Car extends Thread {
 						.getFreeCleaningTeam();
 				System.out.println("start clean inside " + this.getId());
 				this.sleep(cleanTeam.getCleaningTime());
+				theGasStation.setCleanCounter();
 				System.out.println("after sleep = finisined insideCleaning"
 						+ this.getId());
 
